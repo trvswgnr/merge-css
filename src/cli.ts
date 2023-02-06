@@ -2,13 +2,18 @@
 import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { combineUniqueCss, type Options } from './combine-unique-css';
 
-main();
+main().then(() => {
+    console.log('Successfully combined CSS');
+}).catch(e => {
+    console.error(e);
+    process.exit(1);
+});
 
-export default function main() {
+export default async function main() {
     try {
         const args = process.argv.slice(2);
         const options = parseCliArgs(args);
-        const css = combineUniqueCss(options);
+        const css = await combineUniqueCss(options);
 
         // write the CSS to a file, or the console if no output file is specified
         if (options.output) {
@@ -50,19 +55,13 @@ export function parseCliArgs(args: string[]): CliOptions {
 
     for (let i = 2; i < args.length; i++) {
         const arg = args[i];
-        switch (arg) {
-            case '-o' || '--output':
-                output = args[i + 1];
-                i++;
-                break;
-            case '-p' || '--parent':
-                parent = args[i + 1];
-                i++;
-                break;
-            default:
-                console.error(`Error: Unknown argument ${arg}`);
-                showHelp();
-                process.exit(1);
+        if (arg === '-o' || arg === '--output') {
+            output = args[++i];
+        } else if (arg === '-p' || arg === '--parent') {
+            parent = args[++i];
+        } else {
+            console.error(`Error: Unrecognized argument ${arg}`);
+            process.exit(1);
         }
     }
 

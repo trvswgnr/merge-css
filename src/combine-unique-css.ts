@@ -1,10 +1,11 @@
-import postcss, { AcceptedPlugin, Root, AtRule, Rule } from 'postcss';
+import postcss, { Declaration, AcceptedPlugin, Root, AtRule, Rule } from 'postcss';
 import { format } from 'prettier';
 import nested from 'postcss-nested';
 import prefixer from 'postcss-prefix-selector';
 import cssNano from 'cssnano';
-import advancedPresets from 'cssnano-preset-advanced';
-import discardDuplicates from 'postcss-discard-duplicates';
+import { Options as CssNanoOptions } from 'cssnano';
+import advancedPreset from 'cssnano-preset-advanced';
+import combineSelectors from 'postcss-combine-duplicated-selectors';
 
 /**
  * Combine two CSS files, keeping only the unique CSS from each file,
@@ -12,13 +13,14 @@ import discardDuplicates from 'postcss-discard-duplicates';
  * @param {Options} options The options to use.
  * @returns {string} The combined CSS.
  */
-export function combineUniqueCss(options: Options): string {
+export async function combineUniqueCss(options: Options): Promise<string> {
     const v1 = options.css1;
     const v1Parsed = postcss.parse(v1);
     const v2Parsed = postcss.parse(options.css2);
 
     // remove the parent class from all selectors
     if (options.parent) {
+        console.log('removing parent');
         const regex = new RegExp(`${options.parent}\\s?`, 'g');
 
         v1Parsed.walkRules((rule) => {
@@ -36,28 +38,90 @@ export function combineUniqueCss(options: Options): string {
 
     const combined = v1NoParent + '\n' + v2NoParent;
 
-    const sorted = sortCss(combined);
-
-    // format the CSS with prettier
-    const formatted = format(sorted.toString(), { parser: 'css' });
-
-    let plugins: AcceptedPlugin[] = [discardDuplicates];
+    let plugins: AcceptedPlugin[] = [cssNano({ preset: advancedPreset({
+        autoprefixer: false,
+        cssDeclarationSorter: false,
+        calc: false,
+        colormin: false,
+        convertValues: false,
+        discardComments: false,
+        discardDuplicates: true,
+        discardEmpty: true,
+        discardOverridden: true,
+        discardUnused: false,
+        mergeIdents: false,
+        mergeLonghand: false,
+        mergeRules: true,
+        minifyFontValues: false,
+        minifyGradients: false,
+        minifyParams: true,
+        minifySelectors: true,
+        normalizeCharset: true,
+        normalizeDisplayValues: false,
+        normalizePositions: false,
+        normalizeRepeatStyle: false,
+        normalizeString: false,
+        normalizeTimingFunctions: false,
+        normalizeUnicode: false,
+        normalizeUrl: false,
+        normalizeWhitespace: false,
+        orderedValues: false,
+        reduceIdents: false,
+        reduceInitial: false,
+        reduceTransforms: false,
+        svgo: false,
+        uniqueSelectors: true,
+        zindex: false,
+    }), })];
 
     if (options.parent) {
+        console.log('adding prefixer');
         const prefixerPlugin = prefixer({
             prefix: options.parent,
             exclude: [options.parent],
         }) as AcceptedPlugin;
-        plugins.push(nested, prefixerPlugin);
+        plugins.unshift(nested, combineSelectors, prefixerPlugin);
     }
 
+    const sorted = sortCss(combined);
+
     // wrap all the CSS in a parent class
-    const result = postcss(plugins).process(formatted, {
+    const result = postcss(plugins).process(sorted, {
         from: undefined,
     });
 
-    return result.css;
+    const resultCss = await result.then((r) => r.css);
+
+    const formatted = format(resultCss, { parser: 'css' });
+
+    const duplicateDeclarationsRemoved = removeDuplicateDeclarations(formatted);
+
+    return duplicateDeclarationsRemoved;
 }
+
+function removeDuplicateDeclarations(css: string): string {
+    const parsed = postcss.parse(css);
+
+    // we need to walk every rule, then if the rule has a duplicate, remove all but the last one
+    parsed.walkRules((rule) => {
+        const declarations = rule.nodes as Declaration[];
+
+        const declarationMap = new Map<string, Declaration>();
+
+        declarations.forEach((declaration) => {
+            const existing = declarationMap.get(declaration.prop);
+
+            if (existing) {
+                existing.remove();
+            }
+
+            declarationMap.set(declaration.prop, declaration);
+        });
+    });
+
+    return parsed.toString();
+}
+
 
 /**
  * Sorts the CSS like this:

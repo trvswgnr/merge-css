@@ -4,7 +4,7 @@
  * @param {Options} options The options to use.
  * @returns {string} The combined CSS.
  */
-export declare function combineUniqueCss(options: Options): string;
+export declare function combineUniqueCss(options: Options): Promise<string>;
 export interface Options {
     /** The first CSS file contents. */
     css1: string;

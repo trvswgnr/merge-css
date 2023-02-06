@@ -4,12 +4,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseCliArgs = void 0;
 const fs_1 = require("fs");
 const combine_unique_css_1 = require("./combine-unique-css");
-main();
-function main() {
+main().then(() => {
+    console.log('Successfully combined CSS');
+}).catch(e => {
+    console.error(e);
+    process.exit(1);
+});
+async function main() {
     try {
         const args = process.argv.slice(2);
         const options = parseCliArgs(args);
-        const css = (0, combine_unique_css_1.combineUniqueCss)(options);
+        const css = await (0, combine_unique_css_1.combineUniqueCss)(options);
         // write the CSS to a file, or the console if no output file is specified
         if (options.output) {
             (0, fs_1.writeFileSync)(options.output, css);
@@ -46,19 +51,15 @@ function parseCliArgs(args) {
     let parent = '';
     for (let i = 2; i < args.length; i++) {
         const arg = args[i];
-        switch (arg) {
-            case '-o' || '--output':
-                output = args[i + 1];
-                i++;
-                break;
-            case '-p' || '--parent':
-                parent = args[i + 1];
-                i++;
-                break;
-            default:
-                console.error(`Error: Unknown argument ${arg}`);
-                showHelp();
-                process.exit(1);
+        if (arg === '-o' || arg === '--output') {
+            output = args[++i];
+        }
+        else if (arg === '-p' || arg === '--parent') {
+            parent = args[++i];
+        }
+        else {
+            console.error(`Error: Unrecognized argument ${arg}`);
+            process.exit(1);
         }
     }
     const files = [file1, file2, output];
