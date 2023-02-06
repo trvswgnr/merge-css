@@ -1,4 +1,4 @@
-import { combineUniqueCss } from './combine-unique-css';
+import { combineUniqueCss } from './merge-css';
 import postcss from 'postcss';
 import prettier from 'prettier';
 

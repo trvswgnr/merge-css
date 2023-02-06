@@ -18,5 +18,5 @@
         "declaration": true,
         "declarationMap": true
     },
-    "include": ["src/cli.ts", "src/combine-unique-css.ts"]
+    "include": ["src/cli.ts", "src/merge-css.ts"]
 }

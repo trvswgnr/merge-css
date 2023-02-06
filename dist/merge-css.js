@@ -23,7 +23,6 @@ async function combineUniqueCss(options) {
     const v2Parsed = postcss_1.default.parse(options.css2);
     // remove the parent class from all selectors
     if (options.parent) {
-        console.log('removing parent');
         const regex = new RegExp(`${options.parent}\\s?`, 'g');
         v1Parsed.walkRules((rule) => {
             rule.selector = rule.selector.replace(regex, '');
@@ -72,7 +71,6 @@ async function combineUniqueCss(options) {
                 zindex: false,
             }), })];
     if (options.parent) {
-        console.log('adding prefixer');
         const prefixerPlugin = (0, postcss_prefix_selector_1.default)({
             prefix: options.parent,
             exclude: [options.parent],

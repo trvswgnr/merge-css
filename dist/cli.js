@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseCliArgs = void 0;
 const fs_1 = require("fs");
-const combine_unique_css_1 = require("./combine-unique-css");
+const merge_css_1 = require("./merge-css");
 main().then(() => {
 }).catch(e => {
     console.error(e);
@@ -13,7 +13,7 @@ async function main() {
     try {
         const args = process.argv.slice(2);
         const options = parseCliArgs(args);
-        const css = await (0, combine_unique_css_1.combineUniqueCss)(options);
+        const css = await (0, merge_css_1.combineUniqueCss)(options);
         // write the CSS to a file, or the console if no output file is specified
         if (options.output) {
             (0, fs_1.writeFileSync)(options.output, css);
@@ -90,7 +90,7 @@ exports.parseCliArgs = parseCliArgs;
 function showHelp() {
     let help = `
         > Usage:
-        >   combine-unique-css <file1> <file2> [options]
+        >   merge-css <file1> <file2> [options]
         >
         > Options:
         >   -o, --output <file>        The output file to write the combined CSS to.

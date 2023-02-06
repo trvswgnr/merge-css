@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync, existsSync, writeFileSync } from 'fs';
-import { combineUniqueCss, type Options } from './combine-unique-css';
+import { combineUniqueCss, type Options } from './merge-css';
 
 main().then(() => {
 }).catch(e => {
@@ -99,7 +99,7 @@ export function parseCliArgs(args: string[]): CliOptions {
 function showHelp() {
     let help = `
         > Usage:
-        >   combine-unique-css <file1> <file2> [options]
+        >   merge-css <file1> <file2> [options]
         >
         > Options:
         >   -o, --output <file>        The output file to write the combined CSS to.

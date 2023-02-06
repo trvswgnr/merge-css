@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { type Options } from './combine-unique-css';
+import { type Options } from './merge-css';
 export default function main(): Promise<void>;
 /** Options for use from the command line. */
 type CliOptions = Options & {

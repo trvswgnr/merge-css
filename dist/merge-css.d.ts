@@ -13,4 +13,4 @@ export interface Options {
     /** The parent selector to wrap the combined CSS in. */
     parent?: string;
 }
-//# sourceMappingURL=combine-unique-css.d.ts.map
+//# sourceMappingURL=merge-css.d.ts.map

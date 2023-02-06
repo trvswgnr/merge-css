@@ -1,10 +1,10 @@
 {
-  "name": "combine-unique-css",
+  "name": "merge-css",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/combine-unique-css.js",
+  "main": "dist/merge-css.js",
   "bin": {
-    "combine-unique-css": "dist/cli.js"
+    "merge-css": "dist/cli.js"
   },
   "scripts": {
     "build": "npm run clean && tsc && chmod +x ./dist/cli.js",

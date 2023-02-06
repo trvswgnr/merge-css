@@ -20,7 +20,6 @@ export async function combineUniqueCss(options: Options): Promise<string> {
 
     // remove the parent class from all selectors
     if (options.parent) {
-        console.log('removing parent');
         const regex = new RegExp(`${options.parent}\\s?`, 'g');
 
         v1Parsed.walkRules((rule) => {
@@ -75,7 +74,6 @@ export async function combineUniqueCss(options: Options): Promise<string> {
     }), })];
 
     if (options.parent) {
-        console.log('adding prefixer');
         const prefixerPlugin = prefixer({
             prefix: options.parent,
             exclude: [options.parent],
