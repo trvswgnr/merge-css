@@ -5,7 +5,6 @@ exports.parseCliArgs = void 0;
 const fs_1 = require("fs");
 const combine_unique_css_1 = require("./combine-unique-css");
 main().then(() => {
-    console.log('Successfully combined CSS');
 }).catch(e => {
     console.error(e);
     process.exit(1);

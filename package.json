@@ -7,7 +7,7 @@
     "combine-unique-css": "dist/cli.js"
   },
   "scripts": {
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && chmod +x ./dist/cli.js",
     "clean": "cd dist && rm -rf * && cd ..",
     "test": "jest"
   },
@@ -20,7 +20,6 @@
     "esm": "^3.2.25",
     "postcss": "^8.4.21",
     "postcss-combine-duplicated-selectors": "^10.0.3",
-    "postcss-discard-duplicates": "^5.1.0",
     "postcss-nested": "^6.0.0",
     "postcss-prefix-selector": "^1.16.0",
     "prettier": "^2.8.3"

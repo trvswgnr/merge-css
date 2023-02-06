@@ -3,7 +3,6 @@ import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { combineUniqueCss, type Options } from './combine-unique-css';
 
 main().then(() => {
-    console.log('Successfully combined CSS');
 }).catch(e => {
     console.error(e);
     process.exit(1);
