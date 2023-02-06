@@ -10,7 +10,7 @@ import prefixer from 'postcss-prefix-selector';
  * Combine two CSS files, keeping only the unique CSS from each file,
  * sort the CSS, wrap it in a parent, then write it to a file.
  * @param {IOptions} options The options to use.
- * @returns {void}
+ * @returns {string} The combined CSS.
  */
 function combine(options) {
     const v1 = options.css1;
@@ -70,8 +70,9 @@ function combine(options) {
     } else {
         console.log(result.css);
     }
-}
 
+    return result.css;
+}
 
 /**
  * Sorts the CSS like this:
