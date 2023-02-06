@@ -7,7 +7,7 @@ Combine two CSS files, keeping only the unique rules from each.
 1. Clone the repository and `cd` into it.
 2. Run `npm install` to install the dependencies.
 3. Run `npm link` to make the `combine-unique-css` command available globally.
-5. Run `combine-unique-css <file1> <file2> [-o <output>] [-p [parentClass]]` to combine the CSS files.
+5. Run `combine-unique-css <file1> <file2> [-o <output>] [-p [parentSelector]]` to combine the CSS files.
 
 ## Usage
 
