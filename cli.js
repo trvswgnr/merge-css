@@ -81,5 +81,17 @@ function parseCliArgs(args) {
 }
 
 function showHelp() {
-    console.log(`Usage:\n combine-unique-css file1.css file2.css [-o output.css]`);
+    let help = `
+        > Usage:
+        >   combine-unique-css <file1> <file2> [options]
+        >
+        > Options:
+        >   -o, --output <file>        The output file to write the combined CSS to.
+        >   -p, --parent <selector>    The parent selector to wrap the combined CSS in.
+        >   -h, --help                 Show this help message.
+    `;
+
+    help = help.trim().split('\n').map((line) => line.trim().replace(/^>\s?/, '')).join('\n');
+    console.info(help);
+
 }
