@@ -1,73 +1,60 @@
-import { writeFileSync } from 'fs';
 import postcss, { AcceptedPlugin, Root, AtRule, Rule } from 'postcss';
-import uniqueCss from './unique-css';
 import { format } from 'prettier';
 import nested from 'postcss-nested';
 import prefixer from 'postcss-prefix-selector';
+import cssNano from 'cssnano';
+import advancedPresets from 'cssnano-preset-advanced';
+import discardDuplicates from 'postcss-discard-duplicates';
 
 /**
  * Combine two CSS files, keeping only the unique CSS from each file,
  * sort the CSS, wrap it in a parent, then write it to a file.
- * @param {IOptions} options The options to use.
+ * @param {Options} options The options to use.
  * @returns {string} The combined CSS.
  */
-export function combineUniqueCss(options: IOptions): string {
+export function combineUniqueCss(options: Options): string {
     const v1 = options.css1;
     const v1Parsed = postcss.parse(v1);
+    const v2Parsed = postcss.parse(options.css2);
 
     // remove the parent class from all selectors
     if (options.parent) {
+        const regex = new RegExp(`${options.parent}\\s?`, 'g');
+
         v1Parsed.walkRules((rule) => {
-            const regex = new RegExp(`${options.parent}\\s?`, 'g');
+            rule.selector = rule.selector.replace(regex, '');
+        });
+
+        v2Parsed.walkRules((rule) => {
             rule.selector = rule.selector.replace(regex, '');
         });
     }
 
     // convert the CSS back to a string
     const v1NoParent = v1Parsed.toString();
+    const v2NoParent = v2Parsed.toString();
 
-    const v2 = options.css2;
-
-    // get the unique CSS from v1 compared to v2
-    const v1Unique = uniqueCss(v1NoParent, v2);
-
-    // get the unique CSS from v2 compared to v1
-    const v2Unique = uniqueCss(v2, v1NoParent);
-
-    const combined = v1Unique + '\n' + v2Unique;
+    const combined = v1NoParent + '\n' + v2NoParent;
 
     const sorted = sortCss(combined);
 
     // format the CSS with prettier
     const formatted = format(sorted.toString(), { parser: 'css' });
 
-    let plugins: AcceptedPlugin[] = [];
+    let plugins: AcceptedPlugin[] = [discardDuplicates];
 
     if (options.parent) {
-        plugins = [
-            nested,
-            // @ts-ignore
-            prefixer({
-                prefix: options.parent,
-                exclude: [options.parent],
-            }),
-        ];
+        const prefixerPlugin = prefixer({
+            prefix: options.parent,
+            exclude: [options.parent],
+        }) as AcceptedPlugin;
+        plugins.push(nested, prefixerPlugin);
     }
-
 
     // wrap all the CSS in a parent class
     const result = postcss(plugins).process(formatted, {
         from: undefined,
     });
-
-
-    // write the CSS to a file, or the console if no output file is specified
-    if (options.output) {
-        writeFileSync(options.output, result.css);
-        console.log(`Successfully combined CSS into ${options.output}`);
-    } else {
-        console.log(result.css);
-    }
 
     return result.css;
 }
@@ -134,13 +121,11 @@ function sortCss(css: string): Root {
     return root;
 }
 
-export interface IOptions {
+export interface Options {
     /** The first CSS file contents. */
     css1: string;
     /** The second CSS file contents. */
     css2: string;
-    /** The output file to write the combined CSS to. */
-    output?: string;
     /** The parent selector to wrap the combined CSS in. */
     parent?: string;
 }

@@ -2,27 +2,34 @@
   "name": "combine-unique-css",
   "version": "1.0.0",
   "description": "",
-  "main": "combine-unique-css.js",
+  "main": "dist/combine-unique-css.js",
   "bin": {
-    "combine-unique-css": "cli.js"
+    "combine-unique-css": "dist/cli.js"
   },
-  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run clean && tsc",
+    "clean": "cd dist && rm -rf * && cd ..",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cssnano": "^5.1.14",
+    "cssnano-preset-advanced": "^5.3.9",
     "esm": "^3.2.25",
     "postcss": "^8.4.21",
+    "postcss-discard-duplicates": "^5.1.0",
     "postcss-nested": "^6.0.0",
     "postcss-prefix-selector": "^1.16.0",
     "prettier": "^2.8.3"
   },
   "devDependencies": {
     "@jest/globals": "^29.4.1",
+    "@types/jest": "^29.4.0",
     "@types/postcss-prefix-selector": "^1.15.0",
-    "jest": "^29.4.1"
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.5"
   }
 }
